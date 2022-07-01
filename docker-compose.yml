@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+    image: m1x0n/echo-jaeger:latest
+    ports:
+      - "1337:1337"
+    networks:
+      - backend
+    environment:
+      JAEGER_SERVICE_NAME: echo-jaeger
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
+  jaeger:
+    image: jaegertracing/all-in-one:1.35
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    networks:
+      - backend
+networks:
+  backend:
+    driver: "bridge"
